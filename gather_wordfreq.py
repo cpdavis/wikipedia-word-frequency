@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 
-MIN_ARTICLES = 3	# number of articles where words need to appear
+MIN_ARTICLES = 0	# number of articles where words need to appear
 line_trans = str.maketrans('–’', "-\'")
 words_split_re = re.compile(r'[^\w\-\']')
 # capture compound words (such as "non-profit") and single letter words (such as "a")
@@ -46,13 +46,13 @@ for fn in sys.argv[1:]:
 					word_uses[word] += 1
 					if not word in word_docs:
 						word_docs[word] = {doc_no}
-					elif len(word_docs[word]) < MIN_ARTICLES:
+					elif len(word_docs[word]) > MIN_ARTICLES:
 						word_docs[word].add(doc_no)
 
 # remove words used less than MIN_ARTICLES
 
 for word in list(word_uses.keys()):
-	if len(word_docs[word]) < MIN_ARTICLES:
+	if len(word_docs[word]) < 3:
 		del word_uses[word]
 
 # save raw data
@@ -60,4 +60,4 @@ for word in list(word_uses.keys()):
 words = list(word_uses.keys())
 words.sort(key=lambda w: word_uses[w], reverse=True)
 for word in words:
-	print("%s %d" % (word, word_uses[word]))
+	print(word, word_uses[word], len(word_docs[word]), (len(word_docs[word])/word_uses[word])) # just added the last component for relative context diversity
